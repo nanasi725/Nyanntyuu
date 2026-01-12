@@ -17,10 +17,10 @@ function toNyanchu(text: string): string {
 const commands = [
     new SlashCommandBuilder()
         .setName('nyanchu')
-        .setDescription('入力した言葉を濁点まみれにするにゃ')
+        .setDescription('ニ゛ ャ゛ ン゛ ち゛ ゅ゛ う゛ だ゛ ニ゛ ャ゛ ン゛')
         .addStringOption(option =>
             option.setName('text') 
-                .setDescription('変換したい言葉')
+                .setDescription('お゛ぉ゛ぉ゛ぉ゛ぉ゛ん！！')
                 .setRequired(true)
         ),
 ];
