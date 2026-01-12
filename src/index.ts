@@ -1,22 +1,56 @@
-import { Client, GatewayIntentBits, Events } from 'discord.js';
+import { Client, GatewayIntentBits, Events, REST, Routes, SlashCommandBuilder } from 'discord.js';
 import dotenv from 'dotenv';
 
-// .envファイルから環境変数を読み込む
 dotenv.config();
 
-// クライアント（Bot）の作成
+const TOKEN = process.env.DISCORD_TOKEN!;
+
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds, // サーバーに関するイベントを受け取る
-        GatewayIntentBits.GuildMessages, // メッセージに関するイベントを受け取る
-        GatewayIntentBits.MessageContent, // メッセージの中身を読み取る（特権）
-    ],
+    intents: [GatewayIntentBits.Guilds],
 });
 
-// 起動時のイベント
-client.once(Events.ClientReady, (c) => {
-    console.log(`準備完了！ ${c.user.tag} としてログインしました。`);
+function toNyanchu(text: string): string {
+    return text.split('').map(char => char + '゛').join(' ');
+}
+
+
+const commands = [
+    new SlashCommandBuilder()
+        .setName('nyanchu')
+        .setDescription('入力した言葉を濁点まみれにするにゃ')
+        .addStringOption(option =>
+            option.setName('text') 
+                .setDescription('変換したい言葉')
+                .setRequired(true)
+        ),
+];
+
+client.once(Events.ClientReady, async (c) => {
+    console.log(`準備完了！ ${c.user.tag} がログインしました`);
+
+    const rest = new REST({ version: '10' }).setToken(TOKEN);
+    try {
+        console.log('コマンドを更新中...');
+        await rest.put(
+            Routes.applicationCommands(c.user.id),
+            { body: commands },
+        );
+        console.log('コマンド更新完了！');
+    } catch (error) {
+        console.error(error);
+    }
 });
 
-// ログイン実行
-client.login(process.env.DISCORD_TOKEN);
+client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    if (interaction.commandName === 'nyanchu') {
+        const inputText = interaction.options.getString('text') ?? '';
+        
+        const result = toNyanchu(inputText);
+
+        await interaction.reply(result);
+    }
+});
+
+client.login(TOKEN);
