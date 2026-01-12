@@ -10,9 +10,14 @@ const client = new Client({
 });
 
 function toNyanchu(text: string): string {
-    return text.split('').map(char => char + '゛').join(' ');
+    const smallOCount = Math.floor(Math.random() * 10) + 3;
+    const scream = 'ぉ゛'.repeat(smallOCount); 
+    const prefix = `お゛${scream}ん゛！！`;
+    const body = text.split('').map(char => char + '゛').join(' ');
+    const bangCount = Math.floor(Math.random() * 10) + 1;
+    const suffix = '！'.repeat(bangCount);
+    return `${prefix}　${body}${suffix}`;
 }
-
 
 const commands = [
     new SlashCommandBuilder()
